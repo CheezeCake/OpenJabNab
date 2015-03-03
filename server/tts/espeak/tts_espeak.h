@@ -5,23 +5,24 @@
 #include <QTextStream>
 #include <QThread>
 #include <sndfile.hh>
-#include <speak_lib.h>
+#include <espeak/speak_lib.h>
 #include "ttsinterface.h"
-	
+
 class TTSESpeak : public TTSInterface
 {
 	Q_OBJECT
 	Q_INTERFACES(TTSInterface)
-	
+
 public:
 	TTSESpeak();
 	virtual ~TTSESpeak();
 	QByteArray CreateNewSound(QString, QString, bool);
 
 private:
-	SndfileHandle fileHandle;
+	static SndfileHandle* fileHandle;
+	int sampleRate;
 
-	int callback(short*, numsamples, espeak_EVENT*);
+	static int callback(short*, int, espeak_EVENT*);
 };
 
 #endif

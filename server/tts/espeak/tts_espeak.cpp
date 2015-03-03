@@ -4,55 +4,86 @@
 #include "tts_espeak.h"
 #include "log.h"
 
+// TODO: solve C++ callback method to C callback problem to avoid having
+// fileHandle as a static member
+
 Q_EXPORT_PLUGIN2(tts_espeak, TTSESpeak)
 
-TTSESpeak::TTSESpeak():TTSInterface("espeak", "ESpeak")
+TTSESpeak::TTSESpeak() : TTSInterface("espeak", "ESpeak")
 {
+	// TODO: fill voiceList?
+	sampleRate = espeak_Initialize(AUDIO_OUTPUT_RETRIEVAL, 0, "/usr/share", 0);
+
+	if (sampleRate == -1)
+		LogError("eSpeak dit not initialize properly");
 }
 
 TTSESpeak::~TTSESpeak()
-{}
+{
+	if (sampleRate != -1)
+		espeak_Terminate();
+}
 
 QByteArray TTSESpeak::CreateNewSound(QString text, QString voice, bool forceOverwrite)
 {
-	// TO DO : MANAGE forceOverwrite + QString to string ? + close eSpeak
-
-	int samplerate = espeak_Initialize(AUDIO_OUTPUT_RETRIEVAL, 0, DATA_DIR, 0);
-
-	if(samplerate == -1)
+	if (sampleRate == -1)
 	{
-		std::cerr << "Error initialize\n";
-		LogError("eSpeak dit not initialize properly")
+		LogError("eSpeak not initialized");
 		return QByteArray();
 	}
 
-	espeak_SetVoiceByName(voice);
+	if (!voiceList.contains(voice))
+		voice = "fr";
 
-	fileHandle = SndfileHandle("out.wav", SFM_WRITE, SF_FORMAT_WAV | SF_FORMAT_PCM_16,
-			1, sr);
+	// Check (and create if needed) output folder
+	QDir outputFolder = ttsFolder;
+	if (!outputFolder.exists(voice))
+		outputFolder.mkdir(voice);
 
-	if (!fileHandle)
-		return 3;
+	if (!outputFolder.cd(voice))
+	{
+		LogError(QString("Cant create TTS Folder : %1").arg(ttsFolder.absoluteFilePath(voice)));
+		return QByteArray();
+	}
+
+	// Compute fileName
+	QString fileName = QCryptographicHash::hash(text.toAscii(), QCryptographicHash::Md5).toHex().append(".wav");
+	QString filePath = outputFolder.absoluteFilePath(fileName);
+
+	if (!forceOverwrite && QFile::exists(filePath))
+		return ttsHTTPUrl.arg(voice, fileName).toAscii();
+
+
+	// TODO : QString to string ?
+
+	espeak_SetVoiceByName(voice.toStdString().c_str());
+
+	fileHandle = new SndfileHandle(filePath.toStdString(), SFM_WRITE, SF_FORMAT_WAV | SF_FORMAT_PCM_16, 1, sampleRate);
+
+	if (!fileHandle || !(*fileHandle))
+	{
+		LogError("Cannot open sound file for writing");
+		return QByteArray();
+	}
 
 	espeak_SetSynthCallback(callback);
 
-	int ret = espeak_Synth(text, sizeof(text), 0,
-			POS_CHARACTER, 0, espeakCHARS_UTF8, NULL, NULL);
+	if (espeak_Synth(text.toStdString().c_str(), text.size(), 0, POS_CHARACTER, 0, espeakCHARS_UTF8, NULL, NULL) != EE_OK)
+	{
+		LogError("eSpeak synthesis failed");
+		delete fileHandle;
+		return QByteArray();
+	}
 
-	return 0;
+	delete fileHandle;
+	return ttsHTTPUrl.arg(voice, fileName).toAscii();
 }
 
-int TTSESpeak::callback(short* wav int numsamples, espeak_EVENT* events)
+int TTSESpeak::callback(short* wav, int numsamples, espeak_EVENT* events)
 {
-	// debug
-	//std::cout << "callback called\n";
-
+	(void)events;
 	if(wav)
-	{
-		// debug
-		//std::cout << "writing!\n";
-		fileHandle.write(wav, numsamples);
-	}
+		fileHandle->write(wav, numsamples);
 
 	return 0;
 }

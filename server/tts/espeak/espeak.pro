@@ -11,7 +11,7 @@ INCLUDEPATH += . ../../server ../../lib
 TARGET = tts_acapela
 DESTDIR = ../../bin/tts
 DEPENDPATH += . ../../server ../../lib
-LIBS += -L../../bin/ -lcommon
+LIBS += -L../../bin/ -lcommon -lsndfile -lespeak -pthread
 MOC_DIR = ./tmp/moc
 OBJECTS_DIR = ./tmp/obj
 win32 {
