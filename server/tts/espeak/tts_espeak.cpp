@@ -4,10 +4,9 @@
 #include "tts_espeak.h"
 #include "log.h"
 
-// TODO: solve C++ callback method to C callback problem to avoid having
-// fileHandle as a static member
-
 Q_EXPORT_PLUGIN2(tts_espeak, TTSESpeak)
+
+SndfileHandle* TTSESpeak::fileHandle = 0;
 
 TTSESpeak::TTSESpeak() : TTSInterface("espeak", "ESpeak")
 {
@@ -68,7 +67,7 @@ QByteArray TTSESpeak::CreateNewSound(QString text, QString voice, bool forceOver
 
 	espeak_SetSynthCallback(callback);
 
-	if (espeak_Synth(text.toStdString().c_str(), text.size(), 0, POS_CHARACTER, 0, espeakCHARS_UTF8, NULL, NULL) != EE_OK)
+	if (espeak_Synth(text.toStdString().c_str(), text.size(), 0, POS_CHARACTER, text.size(), espeakCHARS_UTF8, NULL, NULL) != EE_OK)
 	{
 		LogError("eSpeak synthesis failed");
 		delete fileHandle;
@@ -82,7 +81,7 @@ QByteArray TTSESpeak::CreateNewSound(QString text, QString voice, bool forceOver
 int TTSESpeak::callback(short* wav, int numsamples, espeak_EVENT* events)
 {
 	(void)events;
-	if(wav)
+	if (wav)
 		fileHandle->write(wav, numsamples);
 
 	return 0;
