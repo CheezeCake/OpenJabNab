@@ -14,6 +14,7 @@
 #include "settings.h"
 #include "ttsmanager.h"
 #include "xmpphandler.h"
+#include "pocketSphinx.h"
 
 OpenJabNab::OpenJabNab(int argc, char ** argv):QCoreApplication(argc, argv)
 {
@@ -30,9 +31,13 @@ OpenJabNab::OpenJabNab(int argc, char ** argv):QCoreApplication(argc, argv)
 	BunnyManager::LoadBunnies();
 	ZtampManager::LoadZtamps();
 
+
         int now = QDateTime::currentDateTime().toTime_t();
         int next = QDateTime(QDate::currentDate().addDays(1)).toTime_t();
         QTimer::singleShot(1000 * (next - now), this, SLOT(RotateLog()));
+
+	if (GlobalSettings::Get("Config/pocketsphinx", false) == true)
+		PocketSphinx::init();
 
 	if(GlobalSettings::Get("Config/HttpListener", true) == true)
 	{

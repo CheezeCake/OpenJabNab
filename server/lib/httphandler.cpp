@@ -9,6 +9,7 @@
 #include "netdump.h"
 #include "openjabnab.h"
 #include "settings.h"
+#include "pocketSphinx.h"
 
 HttpHandler::HttpHandler(QTcpSocket * s, bool api, bool violetapi):pluginManager(PluginManager::Instance())
 {
@@ -60,6 +61,15 @@ void HttpHandler::HandleBunnyHTTPRequest()
 		}
 		else
 			incomingHttpSocket->write("Violet Api is disabled");
+	}
+	else if (uri.startsWith("/vl/record.jsp")) // audio record
+	{
+		QString sn = request.GetArg("sn");
+		Bunny* bunny = BunnyManager::GetBunny(sn.toAscii());
+		QString record = bunny->GetGlobalSetting("lastRecord", "").toString();
+
+		QString recognized = PocketSphinx::recognize(record);
+		LogInfo(recognized);
 	}
 	else
 	{
