@@ -6,10 +6,9 @@
 
 ps_decoder_t* PocketSphinx::ps = 0;
 
-PocketSphinx& PocketSphinx::getInstance()
+bool PocketSphinx::enabled()
 {
-	static PocketSphinx p;
-	return p;
+	return (ps != 0);
 }
 
 void PocketSphinx::init()
@@ -20,7 +19,9 @@ void PocketSphinx::init()
 
 	cfg = cmd_ln_init(NULL, ps_args(), TRUE,
 			"-hmm", "model/hmm/lium_french_f0",
-			"-lm", "model/lm/fr-phone.lm.dmp",
+			/* "-hmm", "model/hmm/lium_french_f2", */
+			/* "-lm", "model/lm/fr-phone.lm.dmp", */
+			"-lm", "model/lm/french3g62K.lm.dmp",
 			"-dict", "model/lm/frenchWords62K.dic",
 			NULL);
 
@@ -58,7 +59,7 @@ QString PocketSphinx::recognize(const QString& filename)
 	const char *uttid;
 	int rv;
 	int32 score;
-	QString recordRoot = GlobalSettings::GetString("RealHttpRoot") + "plugins/record/";
+	QString recordRoot = GlobalSettings::GetString("Config/RealHttpRoot") + "plugins/record/";
 	QString converted = recordRoot + "ps_" + filename;
 	QString file = recordRoot + filename;
 
@@ -66,14 +67,18 @@ QString PocketSphinx::recognize(const QString& filename)
 	pid_t pid = fork();
 	if (pid == 0)
 	{
-		execl("sox", "sox", file.toStdString().c_str(), "-b16",
+		execl("/usr/bin/sox", "/usr/bin/sox", file.toStdString().c_str(), "-b16",
 				converted.toStdString().c_str(), "rate", "16k", NULL);
 
-		LogError("Convertion failed");
+		LogError(QString("Convertion failed: %1 -> %2").arg(file, converted));
 		exit(1);
 	}
 
-	waitpid(pid, 0, 0);
+	int status = 0;
+	waitpid(pid, &status, 0);
+
+	if (status != 0)
+		return QString();
 
 	filep = fopen(converted.toStdString().c_str(), "rb");
 	if (filep)
@@ -89,17 +94,17 @@ QString PocketSphinx::recognize(const QString& filename)
 			}
 			else
 			{
-				LogError("Error decoding file");
+				LogError(QString("Error decoding file: %1").arg(converted));
 			}
 		}
 		else
 		{
-			LogError("Error decoding file");
+			LogError(QString("Error decoding file: %1").arg(converted));
 		}
 	}
 	else
 	{
-		LogError("Error openning file");
+		LogError(QString("Error openning file: %1").arg(converted));
 	}
 
 	return QString();

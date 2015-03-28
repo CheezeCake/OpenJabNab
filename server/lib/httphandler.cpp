@@ -62,15 +62,6 @@ void HttpHandler::HandleBunnyHTTPRequest()
 		else
 			incomingHttpSocket->write("Violet Api is disabled");
 	}
-	else if (uri.startsWith("/vl/record.jsp")) // audio record
-	{
-		QString sn = request.GetArg("sn");
-		Bunny* bunny = BunnyManager::GetBunny(sn.toAscii());
-		QString record = bunny->GetGlobalSetting("lastRecord", "").toString();
-
-		QString recognized = PocketSphinx::recognize(record);
-		LogInfo(recognized);
-	}
 	else
 	{
 		NetworkDump::Log("HTTP Request", request.GetRawURI());
@@ -84,6 +75,20 @@ void HttpHandler::HandleBunnyHTTPRequest()
 		incomingHttpSocket->write(request.reply);
 		if(!uri.contains("itmode.jsp") && !uri.contains(".mp3") && !uri.contains(".chor") && !uri.contains("bc.jsp") && request.reply.size() < 256) // Don't dump too big answers
 			NetworkDump::Log("HTTP Answer", request.reply);
+
+		Disconnect(); // disconnect so the bunny doesn't send the record again
+		if (uri.startsWith("/vl/record.jsp") && PocketSphinx::enabled()) // audio record
+		{
+			QString sn = request.GetArg("sn");
+			Bunny* bunny = BunnyManager::GetBunny(sn.toAscii());
+			QString record = bunny->GetGlobalSetting("LastRecord", "").toString();
+
+			LogInfo(record);
+
+			QString recognized = PocketSphinx::recognize(record);
+			LogInfo(recognized);
+		}
+		return;
 	}
 	Disconnect();
 }

@@ -10,7 +10,7 @@ class OJN_EXPORT PocketSphinx
 public:
 	~PocketSphinx();
 	static void init();
-	static PocketSphinx& getInstance();
+	static bool enabled();
 	static QString recognize(const QString&);
 
 private:
