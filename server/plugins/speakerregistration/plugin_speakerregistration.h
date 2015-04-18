@@ -12,9 +12,13 @@ public:
 	PluginSpeakerRegistration();
 	virtual ~PluginSpeakerRegistration();
 
-	void OnBunnyConnect(Bunny *);
-	void OnBunnyDisconnect(Bunny *);
-	void OnInitPacket(const Bunny *, AmbientPacket &, SleepPacket &);
+	//void OnBunnyConnect(Bunny *);
+	//void OnBunnyDisconnect(Bunny *);
+	//void OnInitPacket(const Bunny *, AmbientPacket &, SleepPacket &);
+	bool OnClick(Bunny*, PluginInterface::ClickType);
+
+private:
+	static std::string speakerName;
 };
 
 #endif
