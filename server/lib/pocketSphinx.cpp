@@ -21,7 +21,8 @@ void PocketSphinx::init()
 			"-hmm", "model/hmm/lium_french_f0",
 			/* "-hmm", "model/hmm/lium_french_f2", */
 			/* "-lm", "model/lm/fr-phone.lm.dmp", */
-			"-lm", "model/lm/french3g62K.lm.dmp",
+			/* "-lm", "model/lm/french3g62K.lm.dmp", */
+			"-fsg", "model/lm/grammar.fsg",
 			"-dict", "model/lm/frenchWords62K.dic",
 			NULL);
 
