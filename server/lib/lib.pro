@@ -48,7 +48,8 @@ HEADERS +=	httphandler.h \
 			apihandler.h \
 			netdump.h \
 			iq.h \
-			pocketSphinx.h
+			pocketSphinx.h \
+			speakerReco.h
 
 SOURCES +=	httphandler.cpp \
 			xmpphandler.cpp \
@@ -72,4 +73,5 @@ SOURCES +=	httphandler.cpp \
 			account.cpp \
 			netdump.cpp \
 			iq.cpp \
-			pocketSphinx.cpp
+			pocketSphinx.cpp \
+			speakerReco.cpp

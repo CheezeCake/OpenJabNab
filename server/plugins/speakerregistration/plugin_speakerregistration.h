@@ -2,7 +2,7 @@
 #define _PLUGINSPEAKERREGISTRATION_H_
 
 #include "plugininterface.h"
-	
+
 class PluginSpeakerRegistration : public PluginInterface
 {
 	Q_OBJECT
@@ -18,7 +18,7 @@ public:
 	bool OnClick(Bunny*, PluginInterface::ClickType);
 
 private:
-	static std::string speakerName;
+	static QString speakerName;
 };
 
 #endif
