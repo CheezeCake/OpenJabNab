@@ -1,4 +1,5 @@
 #include <QByteArray>
+#include <QMap>
 #include <memory>
 #include "apimanager.h"
 #include "bunny.h"
@@ -10,6 +11,7 @@
 #include "openjabnab.h"
 #include "settings.h"
 #include "pocketSphinx.h"
+#include "context.h"
 
 HttpHandler::HttpHandler(QTcpSocket * s, bool api, bool violetapi):pluginManager(PluginManager::Instance())
 {
@@ -84,9 +86,41 @@ void HttpHandler::HandleBunnyHTTPRequest()
 			QString record = bunny->GetGlobalSetting("LastRecord", "").toString();
 
 			LogInfo(record);
+			Context::update();
 
-			QString recognized = PocketSphinx::recognize(record);
-			LogInfo(recognized);
+			if (Context::getAvailability()) {
+				LogInfo("available");
+
+				QString recognized = PocketSphinx::recognize(record);
+				LogInfo("Recognized : " + recognized);
+
+
+				QMap<QString, QString> plugins;
+				plugins.insert("heure", "clock");
+				plugins.insert("reconnaissance", "speakerrecognition");
+				plugins.insert("enregistrement", "speakerregistration");
+
+				QMap<QString, QString>::const_iterator it = plugins.find(recognized);
+				if (it != plugins.end()) {
+					PluginInterface* p = PluginManager::Instance().GetPluginByName(*it);
+					LogInfo("starting plugin : " + *it);
+
+					if (p)
+						p->OnClick(bunny, PluginInterface::SingleClick);
+					else
+						LogError("PluginManager returned null for plugin : " + *it);
+				}
+			}
+			else {
+				QString activePlugin(Context::getActivePlugin().c_str());
+				PluginInterface* p = PluginManager::Instance().GetPluginByName(activePlugin);
+				LogInfo("starting plugin (waiting) : " + activePlugin);
+
+				if (p)
+					p->OnClick(bunny, PluginInterface::SingleClick);
+				else
+					LogError("PluginManager returned null for plugin : " + activePlugin);
+			}
 		}
 		return;
 	}
