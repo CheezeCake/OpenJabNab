@@ -18,17 +18,13 @@ void PocketSphinx::init()
 	cmd_ln_t* cfg;
 
 	cfg = cmd_ln_init(NULL, ps_args(), TRUE,
-			"-hmm", "model/hmm/lium_french_f0",
-			/* "-hmm", "model/hmm/lium_french_f2", */
-			/* "-lm", "model/lm/fr-phone.lm.dmp", */
-			/* "-lm", "model/lm/french3g62K.lm.dmp", */
-			"-fsg", "model/lm/grammar.fsg",
-			"-dict", "model/lm/frenchWords62K.dic",
+			"-hmm", "../resources/models/hmm/lium_french_f0",
+			"-fsg", "../resources/models/lm/grammar/grammar.fsg",
+			"-dict", "../resources/models/lm/french_lium/frenchWords62K.dic",
 			NULL);
 
 	if (cfg)
 	{
-
 		ps = ps_init(cfg);
 		if (!ps)
 			LogError("Error initializing PocketSphinx (could not init ps_decoder_t structure)");
