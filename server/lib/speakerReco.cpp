@@ -9,22 +9,22 @@
 #include "speakerReco.h"
 
 // Binaries
-const std::string speakerReco::sfbcepPath = "/home/julien/spro-5.0/sfbcep";
-const std::string speakerReco::normFeatPath = "/home/julien/LIA_RAL_3.0/bin/NormFeat";
-const std::string speakerReco::ivExtractorPath = "/home/julien/LIA_RAL_3.0/bin/IvExtractor";
-const std::string speakerReco::ivTestPath = "/home/julien/LIA_RAL_3.0/bin/IvTest";
+const std::string speakerReco::sfbcepPath = "./sfbcep";
+const std::string speakerReco::normFeatPath = "./NormFeat";
+const std::string speakerReco::ivExtractorPath = "./IvExtractor";
+const std::string speakerReco::ivTestPath = "./IvTest";
 
 // Directories
-const std::string speakerReco::prmDir = "/home/julien/OpenJabNab/server/plugins/alize/prm/";
-const std::string speakerReco::ndxDir = "/home/julien/OpenJabNab/server/plugins/alize/ndx/";
+const std::string speakerReco::prmDir = "../resources/alize/prm/";
+const std::string speakerReco::ndxDir = "../resources/alize/ndx/";
 
 // Config files
-const std::string speakerReco::normFeatCfgPath = "/home/julien/OpenJabNab/server/plugins/alize/cfg/NormFeat.cfg";
-const std::string speakerReco::ivExtractorCfgPath = "/home/julien/OpenJabNab/server/plugins/alize/cfg/ivExtractor_fast.cfg";
-const std::string speakerReco::ivTestCfgPath = "/home/julien/OpenJabNab/server/plugins/alize/cfg/ivTest_Cosine.cfg";
+const std::string speakerReco::normFeatCfgPath = "../resources/alize/cfg/NormFeat.cfg";
+const std::string speakerReco::ivExtractorCfgPath = "../resources/alize/cfg/ivExtractor_fast.cfg";
+const std::string speakerReco::ivTestCfgPath = "../resources/alize/cfg/ivTest_Cosine.cfg";
 
 // Others
-const std::string speakerReco::resultFilePath = "/home/julien/OpenJabNab/server/plugins/alize/res/scores_Cosine.txt";
+const std::string speakerReco::resultFilePath = "../resources/alize/res/scores_Cosine.txt";
 const std::string speakerReco::timeDataFile = "time.txt";
 
 std::string speakerReco::basename(std::string original)
@@ -150,7 +150,7 @@ std::string speakerReco::analyseResults(std::string resultFile, std::string test
 
 	if(bestScore != 0)
 		return bestModel;
-	
+
 	return "";
 }
 

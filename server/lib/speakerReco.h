@@ -36,7 +36,7 @@ class speakerReco
 		static void addModel(std::string modelsFile, std::string name, std::string vectorName);
 
 	public:
-	
+
 		static void registerModel(std::string name, std::vector<std::string> audioFilesPaths);
 		static std::string identify(std::vector<std::string> audioFilesPaths);
 		static std::string unUnderscore(std::string original);
