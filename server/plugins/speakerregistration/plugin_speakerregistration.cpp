@@ -9,6 +9,8 @@
 
 Q_EXPORT_PLUGIN2(plugin_speakerregistration, PluginSpeakerRegistration)
 
+QString PluginSpeakerRegistration::speakerName = "";
+
 PluginSpeakerRegistration::PluginSpeakerRegistration():PluginInterface("speakerregistration", "speakerregistration plugin")
 {}
 
