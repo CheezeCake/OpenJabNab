@@ -15,6 +15,7 @@
 #include "ttsmanager.h"
 #include "xmpphandler.h"
 #include "pocketSphinx.h"
+#include "context.h"
 
 OpenJabNab::OpenJabNab(int argc, char ** argv):QCoreApplication(argc, argv)
 {
@@ -30,6 +31,7 @@ OpenJabNab::OpenJabNab(int argc, char ** argv):QCoreApplication(argc, argv)
 	PluginManager::Init();
 	BunnyManager::LoadBunnies();
 	ZtampManager::LoadZtamps();
+	Context::init();
 
 
         int now = QDateTime::currentDateTime().toTime_t();
