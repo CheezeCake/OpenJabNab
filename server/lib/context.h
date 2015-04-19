@@ -7,7 +7,7 @@
 class Context
 {
 	private:
-		static const double timeout = 60*3; // Timeout in seconds
+		static const double timeout; // Timeout in seconds
 		static std::time_t waitingSince; // Time registered when a plugin is made active
 		static bool isAvailable; // True if no plugin are running
 		static std::string activePlugin; // Name of the active plugin

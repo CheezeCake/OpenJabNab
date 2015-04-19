@@ -1,6 +1,13 @@
 #include <iostream>
 #include <ctime>
 #include "context.h"
+#include "log.h"
+
+const double Context::timeout = 60 * 3;
+std::time_t Context::waitingSince = 0;
+bool Context::isAvailable = true;
+std::string Context::activePlugin = "";
+std::string Context::pluginSpecifics = "";
 
 void Context::init()
 {
@@ -9,49 +16,50 @@ void Context::init()
 
 void Context::reset()
 {
-	Context::waitingSince = 0;
-	Context::isAvailable = true;
-	Context::activePlugin = "";
-	Context::pluginSpecifics = "";
+	waitingSince = 0;
+	isAvailable = true;
+	activePlugin = "";
+	pluginSpecifics = "";
 }
 
 void Context::resetTime()
 {
-	Context::waitingSince = time(NULL);
+	waitingSince = time(NULL);
 }
 
 void Context::update()
 {
-	if(Context::isAvailable)
+	if(isAvailable)
 		return;
 
-	if(difftime(time(NULL), Context::waitingSince) > Context::timeout)
+	if(difftime(time(NULL), waitingSince) > timeout)
 		reset();
 }
 
 bool Context::getAvailability()
 {
-	return Context::isAvailable;
+	return isAvailable;
 }
 
 void Context::setActivePlugin(std::string newPlugin)
 {
-	Context::activePlugin = newPlugin;
-	Context::isAvailable = false;
+	activePlugin = newPlugin;
+	isAvailable = false;
 	setPluginSpecs("");
 }
 
 std::string Context::getActivePlugin()
 {
-	return Context::activePlugin;
+	return activePlugin;
 }
 
 void Context::setPluginSpecs(std::string newSpecs)
 {
-	Context::pluginSpecifics = newSpecs;
+	pluginSpecifics = newSpecs;
+	resetTime();
 }
 
 std::string Context::getPluginSpecs()
 {
-	return Context::pluginSpecifics;
+	return pluginSpecifics;
 }
