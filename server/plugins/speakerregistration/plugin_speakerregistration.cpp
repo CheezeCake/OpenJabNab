@@ -66,7 +66,7 @@ bool PluginSpeakerRegistration::OnClick(Bunny* b, PluginInterface::ClickType)
 			}
 			else if(Context::getPluginSpecs() == "voice")
 			{
-				QString recordRoot = GlobalSettings::GetString("Config/RealHttpRoot", "") + "/plugins/record/";
+				QString recordRoot = GlobalSettings::GetString("Config/RealHttpRoot", "") + "plugins/record/";
 				QString filename = b->GetGlobalSetting("LastRecord", "").toString();
 				std::string filepath = recordRoot.toStdString() + filename.toStdString();
 				std::vector<std::string> path;
