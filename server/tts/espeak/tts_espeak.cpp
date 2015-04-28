@@ -81,7 +81,7 @@ QByteArray TTSESpeak::CreateNewSound(QString text, QString voice, bool forceOver
 int TTSESpeak::callback(short* wav, int numsamples, espeak_EVENT* events)
 {
 	(void)events;
-	if (wav)
+	if (wav && numsamples > 0)
 		fileHandle->write(wav, numsamples);
 
 	return 0;
