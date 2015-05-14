@@ -5,7 +5,8 @@
 #include <sys/wait.h>
 #include <string>
 #include <vector>
-#include <time.h>
+#include <ctime>
+#include <cstdlib>
 #include "speakerReco.h"
 
 // Binaries
@@ -55,6 +56,9 @@ int speakerReco::setUpParamFile(std::string sphFile, bool isSph = false)
 			execl(sfbcepPath.c_str(), "sfbcep", "-F", "SPHERE", "-p", "19", "-e", "-D", "-A", "-k", "0", sphFile.c_str(), (prmDir + name + ".prm").c_str(), NULL);
 		else
 			execl(sfbcepPath.c_str(), "sfbcep", "-p", "19", "-e", "-D", "-A", "-k", "0", sphFile.c_str(), (prmDir + name + ".prm").c_str(), NULL);
+
+		std::cerr << "Error exec sfbcep\n";
+		exit(1);
 	}
 	else if(pid > 0)
 		waitpid(pid, &status, 0);
@@ -69,7 +73,11 @@ int speakerReco::normalizeParam(std::string paramFile)
 	pid_t pid = fork();
 	int status = 1;
 	if(pid == 0)
+	{
 		execl(normFeatPath.c_str(), "NormFeat", "--config", normFeatCfgPath.c_str(), "--inputFeatureFilename", paramFile.c_str(), "--featureFilesPath", prmDir.c_str(), NULL);
+		std::cerr << "Error exec NormFeat\n";
+		exit(1);
+	}
 	else if(pid > 0)
 		waitpid(pid, &status, 0);
 	else
@@ -87,6 +95,8 @@ int speakerReco::createIvector(std::string targetIndex) // list of files to crea
 	{
 		std::cout << ivExtractorPath << " " << "--config " << ivExtractorCfgPath << " --targetIdList " << targetIndex << " --featureFilesPath " << prmDir << std::endl;
 		execl(ivExtractorPath.c_str(), "IvExtractor", "--config", ivExtractorCfgPath.c_str(), "--targetIdList", targetIndex.c_str(), "--featureFilesPath", prmDir.c_str(), NULL);
+		std::cerr << "Error exec IvExtractor\n";
+		exit(1);
 	}
 	else if(pid > 0)
 	{
@@ -107,6 +117,8 @@ int speakerReco::test(std::string testIndex)
 	{
 		std::cout << ivTestPath << " --config " << ivTestCfgPath << " --ndxFilename " << testIndex << std::endl;
 		execl(ivTestPath.c_str(), "IvTest", "--config", ivTestCfgPath.c_str(), "--ndxFilename", testIndex.c_str(), NULL);
+		std::cerr << "Error exec IvTest\n";
+		exit(1);
 	}
 	else if(pid > 0)
 		waitpid(pid, &status, 0);
