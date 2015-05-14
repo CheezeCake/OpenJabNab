@@ -4,7 +4,7 @@
 #include <QMultiMap>
 #include <QTextStream>
 #include <QThread>
-#include <sndfile.hh>
+#include <sndfile.h>
 #include <espeak/speak_lib.h>
 #include "ttsinterface.h"
 
@@ -19,7 +19,7 @@ public:
 	QByteArray CreateNewSound(QString, QString, bool);
 
 private:
-	static SndfileHandle* fileHandle;
+	static SNDFILE* fileHandle;
 	int sampleRate;
 
 	static int callback(short*, int, espeak_EVENT*);
