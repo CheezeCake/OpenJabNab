@@ -12,6 +12,7 @@ public:
 	static void init();
 	static bool enabled();
 	static QString recognize(const QString&);
+	static QString getLastRecognized();
 
 private:
 	PocketSphinx();
@@ -19,6 +20,7 @@ private:
 	void operator=(const PocketSphinx&);
 
 	static ps_decoder_t* ps;
+	static QString lastRecognized;
 };
 
 #endif

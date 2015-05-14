@@ -6,9 +6,16 @@
 
 ps_decoder_t* PocketSphinx::ps = 0;
 
+QString PocketSphinx::lastRecognized;
+
 bool PocketSphinx::enabled()
 {
 	return (ps != 0);
+}
+
+QString PocketSphinx::getLastRecognized()
+{
+	return lastRecognized;
 }
 
 void PocketSphinx::init()
@@ -60,6 +67,8 @@ QString PocketSphinx::recognize(const QString& filename)
 	QString converted = recordRoot + "ps_" + filename;
 	QString file = recordRoot + filename;
 
+	lastRecognized.clear();
+
 	// convert to PCM signed 16kHz
 	pid_t pid = fork();
 	if (pid == 0)
@@ -87,7 +96,8 @@ QString PocketSphinx::recognize(const QString& filename)
 			if (hyp)
 			{
 				fclose(filep);
-				return QString(hyp);
+				lastRecognized = hyp;
+				return lastRecognized;
 			}
 			else
 			{
