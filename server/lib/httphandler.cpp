@@ -99,16 +99,23 @@ void HttpHandler::HandleBunnyHTTPRequest()
 				plugins.insert("heure", "clock");
 				plugins.insert("reconnaissance", "speakerrecognition");
 				plugins.insert("enregistrement", "speakerregistration");
+				plugins.insert("agenda", "agenda");
 
-				QMap<QString, QString>::const_iterator it = plugins.find(recognized);
-				if (it != plugins.end()) {
-					PluginInterface* p = PluginManager::Instance().GetPluginByName(*it);
-					LogInfo("starting plugin : " + *it);
+				QMap<QString, QString>::const_iterator it;
+				for (it = plugins.begin(); it != plugins.end(); ++it)
+				{
+					if (recognized.startsWith(it.key()))
+					{
+						PluginInterface* p = PluginManager::Instance().GetPluginByName(*it);
+						LogInfo("starting plugin : " + *it);
 
-					if (p)
-						p->OnClick(bunny, PluginInterface::SingleClick);
-					else
-						LogError("PluginManager returned null for plugin : " + *it);
+						if (p)
+							p->OnClick(bunny, PluginInterface::SingleClick);
+						else
+							LogError("PluginManager returned null for plugin : " + *it);
+
+						break;
+					}
 				}
 			}
 			else {
