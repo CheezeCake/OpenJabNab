@@ -95,23 +95,24 @@ QString PocketSphinx::recognize(const QString& filename)
 			hyp = ps_get_hyp(ps, &score, &uttid);
 			if (hyp)
 			{
-				fclose(filep);
 				lastRecognized = hyp;
 				return lastRecognized;
 			}
 			else
 			{
-				LogError(QString("Error decoding file: %1").arg(converted));
+				LogError(QString("Error decoding file: %1 (hyp == NULL)").arg(converted));
 			}
 		}
 		else
 		{
-			LogError(QString("Error decoding file: %1").arg(converted));
+			LogError(QString("Error decoding file: %1 (rv < 0)").arg(converted));
 		}
+
+		fclose(filep);
 	}
 	else
 	{
-		LogError(QString("Error openning file: %1").arg(converted));
+		LogError(QString("Error openning file: %1 (filep == NULL)").arg(converted));
 	}
 
 	return QString();
