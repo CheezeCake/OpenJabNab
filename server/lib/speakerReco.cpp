@@ -123,7 +123,7 @@ int speakerReco::generateGMMModel(std::string targetIndex) // list of files to c
 	if(pid == 0)
 	{
 		std::cout << trainTargetPath << " " << "--config " << trainTargetCfgPath << " --targetIdList " << targetIndex << " --inputWorldFilename " << worldFilePath << " --featureFilesPath " << prmDir << std::endl;
-		execl(trainTargetPath.c_str(), "TrainTarget", "--config", trainTargetCfgPath.c_str(), "--targetIdList", targetIndex.c_str(), "inputWorldFilename", worldFilePath, "--featureFilesPath", prmDir.c_str(), NULL);
+		execl(trainTargetPath.c_str(), "TrainTarget", "--config", trainTargetCfgPath.c_str(), "--targetIdList", targetIndex.c_str(), "inputWorldFilename", worldFilePath.c_str(), "--featureFilesPath", prmDir.c_str(), NULL);
 		std::cerr << "Error exec TrainTarget\n";
 		exit(1);
 	}
@@ -164,7 +164,7 @@ int speakerReco::testGMM(std::string testIndex)
 	if(pid == 0)
 	{
 		std::cout << computeTestPath << " --config " << computeTestCfgPath << " --outputFilename " << resultGMMFilePath << " --ndxFilename " << testIndex << std::endl;
-		execl(computeTestPath.c_str(), "ComputeTest", "--config", computeTestCfgPath.c_str(), "--outputFilename", resultGMMFilePath, "--ndxFilename", testIndex.c_str(), NULL);
+		execl(computeTestPath.c_str(), "ComputeTest", "--config", computeTestCfgPath.c_str(), "--outputFilename", resultGMMFilePath.c_str(), "--ndxFilename", testIndex.c_str(), NULL);
 		std::cerr << "Error exec ComputeTest\n";
 		exit(1);
 	}

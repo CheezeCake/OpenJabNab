@@ -46,7 +46,7 @@ class speakerReco
 	public:
 
 		static void registerModel(std::string name, std::vector<std::string> audioFilesPaths);
-		static void registerModelGMM(std::string name, std::vector<std::string> audioFilesPaths)
+		static void registerModelGMM(std::string name, std::vector<std::string> audioFilesPaths);
 		static std::string identify(std::vector<std::string> audioFilesPaths);
 		static std::string identifyGMM(std::vector<std::string> audioFilesPaths);
 		static std::string unUnderscore(std::string original);
