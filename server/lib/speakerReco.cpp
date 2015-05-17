@@ -14,6 +14,8 @@ const std::string speakerReco::sfbcepPath = "./sfbcep";
 const std::string speakerReco::normFeatPath = "./NormFeat";
 const std::string speakerReco::ivExtractorPath = "./IvExtractor";
 const std::string speakerReco::ivTestPath = "./IvTest";
+const std::string speakerReco::trainTargetPath = "./TrainTarget";
+const std::string speakerReco::computeTestPath = "./ComputeTest";
 
 // Directories
 const std::string speakerReco::prmDir = "../resources/alize/prm/";
@@ -23,9 +25,13 @@ const std::string speakerReco::ndxDir = "../resources/alize/ndx/";
 const std::string speakerReco::normFeatCfgPath = "../resources/alize/cfg/NormFeat.cfg";
 const std::string speakerReco::ivExtractorCfgPath = "../resources/alize/cfg/ivExtractor_fast.cfg";
 const std::string speakerReco::ivTestCfgPath = "../resources/alize/cfg/ivTest_Cosine.cfg";
+const std::string speakerReco::trainTargetCfgPath = "../resources/alize/cfg/trainTarget.cfg";
+const std::string speakerReco::computeTestCfgPath = "../resources/alize/cfg/computeTest.cfg";
 
 // Others
 const std::string speakerReco::resultFilePath = "../resources/alize/res/scores_Cosine.txt";
+const std::string speakerReco::resultGMMFilePath = "../resources/alize/res/ident.res";
+const std::string speakerReco::worldFilePath = "world_independent_512";
 const std::string speakerReco::timeDataFile = "time.txt";
 
 std::string speakerReco::basename(std::string original)
@@ -109,6 +115,29 @@ int speakerReco::createIvector(std::string targetIndex) // list of files to crea
 	return status;
 }
 
+int speakerReco::generateGMMModel(std::string targetIndex) // list of files to create a vector for
+{
+	pid_t pid = fork();
+	int status = 1;
+	//time_t start = time(NULL);
+	if(pid == 0)
+	{
+		std::cout << trainTargetPath << " " << "--config " << trainTargetCfgPath << " --targetIdList " << targetIndex << " --inputWorldFilename " << worldFilePath << " --featureFilesPath " << prmDir << std::endl;
+		execl(trainTargetPath.c_str(), "TrainTarget", "--config", trainTargetCfgPath.c_str(), "--targetIdList", targetIndex.c_str(), "inputWorldFilename", worldFilePath, "--featureFilesPath", prmDir.c_str(), NULL);
+		std::cerr << "Error exec TrainTarget\n";
+		exit(1);
+	}
+	else if(pid > 0)
+	{
+		waitpid(pid, &status, 0);
+		//writeTime("CREATE VECTORS FROM " + targetIndex, difftime(time(NULL), start));
+	}
+	else
+		std::cerr << "Fork failed for TrainTarget" << std::endl;
+
+	return status;
+}
+
 int speakerReco::test(std::string testIndex)
 {
 	pid_t pid = fork();
@@ -124,6 +153,25 @@ int speakerReco::test(std::string testIndex)
 		waitpid(pid, &status, 0);
 	else
 		std::cerr << "Fork failed for IvTest" << std::endl;
+
+	return status;
+}
+
+int speakerReco::testGMM(std::string testIndex)
+{
+	pid_t pid = fork();
+	int status = 1;
+	if(pid == 0)
+	{
+		std::cout << computeTestPath << " --config " << computeTestCfgPath << " --outputFilename " << resultGMMFilePath << " --ndxFilename " << testIndex << std::endl;
+		execl(computeTestPath.c_str(), "ComputeTest", "--config", computeTestCfgPath.c_str(), "--outputFilename", resultGMMFilePath, "--ndxFilename", testIndex.c_str(), NULL);
+		std::cerr << "Error exec ComputeTest\n";
+		exit(1);
+	}
+	else if(pid > 0)
+		waitpid(pid, &status, 0);
+	else
+		std::cerr << "Fork failed for ComputeTest" << std::endl;
 
 	return status;
 }
@@ -255,6 +303,28 @@ void speakerReco::registerModel(std::string name, std::vector<std::string> audio
 	//writeTime("REGISTER MODEL", difftime(time(NULL), start));
 }
 
+void speakerReco::registerModelGMM(std::string name, std::vector<std::string> audioFilesPaths)
+{
+	//time_t start = time(NULL);
+	int size = audioFilesPaths.size();
+	if(size == 0)
+		return;
+
+	std::vector<std::string> basenames;
+
+	for(int i = 0; i < size; i++)
+	{
+		std::string file = audioFilesPaths[i];
+		setUpParamFile(file);
+		normalizeParam(basename(file));
+		basenames.push_back(basename(file));
+	}
+	generateIndex(ndxDir + "temp.ndx", name, basenames);
+	addModel(ndxDir + "modelsGMM.ndx", name, name);
+	generateGMMModel(ndxDir + "temp.ndx");
+	//writeTime("REGISTER MODEL", difftime(time(NULL), start));
+}
+
 std::string speakerReco::identify(std::vector<std::string> audioFilesPaths)
 {
 	int size = audioFilesPaths.size();
@@ -275,6 +345,27 @@ std::string speakerReco::identify(std::vector<std::string> audioFilesPaths)
 	generateTestIndex(ndxDir + "models.ndx", ndxDir + "temp.ndx", ndxDir + "test.ndx");
 	test(ndxDir + "test.ndx");
 	return analyseResults(resultFilePath, "temp");
+}
+
+std::string speakerReco::identifyGMM(std::vector<std::string> audioFilesPaths)
+{
+	int size = audioFilesPaths.size();
+	if(size == 0)
+		return NULL;
+
+	std::vector<std::string> basenames;
+
+	for(int i = 0; i < size; i++)
+	{
+		std::string file = audioFilesPaths[i];
+		setUpParamFile(file);
+		normalizeParam(basename(file));
+		basenames.push_back(basename(file));
+	}
+	generateIndex(ndxDir + "temp.ndx", "temp", basenames);
+	generateTestIndex(ndxDir + "modelsGMM.ndx", ndxDir + "temp.ndx", ndxDir + "test.ndx");
+	testGMM(ndxDir + "test.ndx");
+	return analyseResults(resultGMMFilePath, "temp");
 }
 
 std::string speakerReco::unUnderscore(std::string original)
