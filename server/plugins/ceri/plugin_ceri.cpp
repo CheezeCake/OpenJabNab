@@ -12,7 +12,7 @@ PluginCERI::~PluginCERI() {}
 
 bool PluginCERI::OnClick(Bunny* b, PluginInterface::ClickType)
 {
-	if(! b->isIdle())
+	if(! b->IsIdle())
 		return false;
 
 	if(! Context::getAvailability())
@@ -48,7 +48,7 @@ bool PluginCERI::OnClick(Bunny* b, PluginInterface::ClickType)
 void PluginCERI::rabbitTalk(std::string text, Bunny* b)
 {
 	QString voice = b->GetPluginSetting(GetName(), "voice", "tts").toString();
-	QByteArray file = TTSManager::CreateNewSound(text, "julie");
+	QByteArray file = TTSManager::CreateNewSound(text.c_str(), "julie");
 
 	if(!file.isNull())
 	{
@@ -59,8 +59,8 @@ void PluginCERI::rabbitTalk(std::string text, Bunny* b)
 
 void PluginCERI::answer(std::string name, Bunny* b)
 {
-	String dir = "../resources/ceri/";
-	QByteArray file = dir + name + ".wav";
+	/* QByteArray file = QString("../resources/ceri/%1.wav").arg(name.c_str()).toAscii(); */
+	QByteArray file = QString("broadcast/ceri/%1.wav").arg(name.c_str()).toAscii();
 	if(!file.isNull())
 	{
 		QByteArray message = "MU "+file+"\nPL 3\nMW\n";
