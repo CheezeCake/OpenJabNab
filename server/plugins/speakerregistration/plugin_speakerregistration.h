@@ -2,6 +2,8 @@
 #define _PLUGINSPEAKERREGISTRATION_H_
 
 #include "plugininterface.h"
+#include <vector>
+#include <string>
 
 class PluginSpeakerRegistration : public PluginInterface
 {
@@ -19,6 +21,7 @@ public:
 
 private:
 	static QString speakerName;
+	static std::vector<std::string> files;
 };
 
 #endif

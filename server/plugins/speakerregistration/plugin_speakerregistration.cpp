@@ -10,6 +10,7 @@
 Q_EXPORT_PLUGIN2(plugin_speakerregistration, PluginSpeakerRegistration)
 
 QString PluginSpeakerRegistration::speakerName = "";
+std::vector<std::string> PluginSpeakerRegistration::files;
 
 PluginSpeakerRegistration::PluginSpeakerRegistration():PluginInterface("speakerregistration", "speakerregistration plugin")
 {}
@@ -53,7 +54,7 @@ bool PluginSpeakerRegistration::OnClick(Bunny* b, PluginInterface::ClickType)
 				// SEE IF speakerName is persistent
 
 				QString voice = b->GetPluginSetting(GetName(), "voice", "tts").toString();
-				QByteArray file = TTSManager::CreateNewSound("D'accord" + speakerName + ", peux-tu me parler un peu plus ?", "julie");
+				QByteArray file = TTSManager::CreateNewSound("D'accord" + speakerName + ", peux-tu me parler un peu plusse ?", "julie");
 
 				if(!file.isNull())
 				{
@@ -66,21 +67,39 @@ bool PluginSpeakerRegistration::OnClick(Bunny* b, PluginInterface::ClickType)
 			}
 			else if(Context::getPluginSpecs() == "voice")
 			{
+				const int nbAudioFiles = 4;
+				int size = files.size();
+				if(size >= nbAudioFiles)
+				{
+					speakerReco::registerModel(speakerName.toStdString(), files);
+					
+					QString voice = b->GetPluginSetting(GetName(), "voice", "tts").toString();
+					QByteArray file = TTSManager::CreateNewSound("Merci " + speakerName + ", tu es maintenant enregistré" , "julie");
+					if(!file.isNull())
+					{
+						QByteArray message = "MU "+file+"\nPL 3\nMW\n";
+						b->SendPacket(MessagePacket(message));
+						Context::reset();
+						files.clear();
+						return true;
+					}
+				}
+
 				QString recordRoot = GlobalSettings::GetString("Config/RealHttpRoot", "") + "plugins/record/";
 				QString filename = b->GetGlobalSetting("LastRecord", "").toString();
 				std::string filepath = recordRoot.toStdString() + filename.toStdString();
-				std::vector<std::string> path;
-				path.push_back(filepath);
-				/*std::string result =*/ speakerReco::registerModel(speakerName.toStdString(), path);
+				files.push_back(filepath);
 
-				QString voice = b->GetPluginSetting(GetName(), "voice", "tts").toString();
-				QByteArray file = TTSManager::CreateNewSound("Merci" + speakerName + ", tu es maintenant enregistré" , "julie");
+				if (size + 1 < nbAudioFiles)
+				{
+					QString voice = b->GetPluginSetting(GetName(), "voice", "tts").toString();
+					QByteArray file = TTSManager::CreateNewSound(QString("Merci %1, j'ai encore besoin que tu me parles %2 fois").arg(speakerName, QString::number(nbAudioFiles - size - 1)), "julie");
+				}
 
 				if(!file.isNull())
 				{
 					QByteArray message = "MU "+file+"\nPL 3\nMW\n";
 					b->SendPacket(MessagePacket(message));
-					Context::reset();
 					return true;
 				}
 				return false;
