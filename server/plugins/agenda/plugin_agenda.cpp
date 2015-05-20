@@ -67,7 +67,7 @@ bool PluginAgenda::OnClick(Bunny* b, PluginInterface::ClickType)
 		int code;
 		sqlite3_stmt *stmt;
 
-		QRegExp add("ajouter (.+) le ([^ ]+ [^ ]+)( a (.+) heure (.+)?)?");
+		QRegExp add("ajouter (.+) le ([0-9]+ .+)( a (.+) heure (.+)?)?");
 		QRegExp list(".+ [a-z]+");
 		QRegExp remove("supprimer ([0-9]+)");
 
@@ -125,7 +125,7 @@ bool PluginAgenda::OnClick(Bunny* b, PluginInterface::ClickType)
 		}
 		else if (remove.exactMatch(str))
 		{
-			const char sql[] = "delete from events where id = ?";
+			const char sql[] = "delete from events where rowid = ?";
 			code = sqlite3_prepare_v2(dbHandle, sql, -1, &stmt, 0);
 			if (code != SQLITE_OK) {
 				LogError(QString(sqlite3_errstr(code)));
@@ -135,7 +135,7 @@ bool PluginAgenda::OnClick(Bunny* b, PluginInterface::ClickType)
 			QString cap = remove.cap(1);
 			sqlite3_bind_text(stmt, 1, cap.toStdString().c_str(), cap.length(), SQLITE_TRANSIENT);
 
-			file = TTSManager::CreateNewSound((sqlite3_step(stmt) == SQLITE_OK)
+			file = TTSManager::CreateNewSound((sqlite3_step(stmt) != SQLITE_ERROR)
 					? QString("evenement %1 supprime").arg(cap)
 					: QString("l'evenement %1 n'existe pas").arg(cap),
 					"julie");
