@@ -29,6 +29,19 @@ bool PluginSpeakerRecognition::OnClick(Bunny* b, PluginInterface::ClickType)
 	{
 		if(Context::getAvailability())
 		{
+			QByteArray file = TTSManager::CreateNewSound("Peux-tu me parler un peu plusse ?", "julie");
+
+			if(!file.isNull())
+			{
+				QByteArray message = "MU "+file+"\nPL 3\nMW\n";
+				b->SendPacket(MessagePacket(message));
+				Context::setActivePlugin("speakerrecognition");
+				return true;
+			}
+		}
+
+		else if(Context::getActivePlugin() == "speakerrecognition")
+		{
 			QString recordRoot = GlobalSettings::GetString("Config/RealHttpRoot") + "/plugins/record/";
 			QString filename = b->GetGlobalSetting("LastRecord").toString();
 			QString filepath = recordRoot + filename;
@@ -43,8 +56,10 @@ bool PluginSpeakerRecognition::OnClick(Bunny* b, PluginInterface::ClickType)
 			{
 				QByteArray message = "MU "+file+"\nPL 3\nMW\n";
 				b->SendPacket(MessagePacket(message));
+				Context::reset();
 				return true;
 			}
+
 		}
 	}
 	return false;
