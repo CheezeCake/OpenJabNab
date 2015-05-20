@@ -35,7 +35,7 @@ bool PluginCERI::OnClick(Bunny* b, PluginInterface::ClickType)
 	answer("CERI_Niveaux", b);
 
 	rabbitTalk("Comment s'en sortent les étudiants ?", b);
-	answer("Resultats", b);
+	answer("CERI_Resultats", b);
 
 	rabbitTalk("Les étudiants font-ils de la robotique ?", b);
 	answer("CERI_Robot_V2(Avec_classement)", b);
