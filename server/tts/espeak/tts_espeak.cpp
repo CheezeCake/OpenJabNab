@@ -10,7 +10,6 @@ SNDFILE* TTSESpeak::fileHandle = 0;
 
 TTSESpeak::TTSESpeak() : TTSInterface("espeak", "ESpeak")
 {
-	// TODO: fill voiceList?
 	sampleRate = espeak_Initialize(AUDIO_OUTPUT_SYNCHRONOUS, 0, "/usr/share", 0);
 
 	if (sampleRate == -1)
