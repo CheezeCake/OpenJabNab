@@ -5,7 +5,7 @@ grammar ojn;
 public <final> = <basicCmd> | <prenom> | <agendaCmd>;
 
 <basicCmd> = <basicPlugin> | <basicKeyword>;
-<basicPlugin> = heure | reconnaissance | enregistrement | blague;
+<basicPlugin> = heure | reconnaissance | enregistrement | blague | agenda;
 <basicKeyword> = arrêter | oublier | annuler;
 
 <agendaCmd> = [ agenda ] (<agendaList> | <agendaAdd> | <agendaDelete>);
