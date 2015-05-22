@@ -8,6 +8,7 @@
 #include "log.h"
 #include "ttsmanager.h"
 #include "messagepacket.h"
+#include "context.h"
 
 Q_EXPORT_PLUGIN2(plugin_agenda, PluginAgenda)
 
@@ -61,6 +62,28 @@ bool PluginAgenda::OnClick(Bunny* b, PluginInterface::ClickType)
 		QByteArray file;
 
 		QString str = PocketSphinx::getLastRecognized();
+		if (Context::getAvailability())
+		{
+			if (str == "agenda")
+			{
+				file = TTSManager::CreateNewSound("Que veux-tu faire ?", "julie");
+				Context::setActivePlugin("agenda");
+
+				if(!file.isNull())
+				{
+					QByteArray message = "MU "+file+"\nPL 3\nMW\n";
+					b->SendPacket(MessagePacket(message));
+					return true;
+				}
+			}
+		}
+		else
+		{
+			QString filename = b->GetGlobalSetting("LastRecord", "").toString();
+			str = PocketSphinx::recognize(filename);
+			Context::reset();
+		}
+
 		str.remove(QRegExp("^agenda "));
 		LogInfo(QString("agenda str = '%1'").arg(str));
 
