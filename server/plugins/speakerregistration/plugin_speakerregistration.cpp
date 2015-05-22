@@ -94,13 +94,13 @@ bool PluginSpeakerRegistration::OnClick(Bunny* b, PluginInterface::ClickType)
 				{
 					QString voice = b->GetPluginSetting(GetName(), "voice", "tts").toString();
 					QByteArray file = TTSManager::CreateNewSound(QString("Merci %1, j'ai encore besoin que tu me parles %2 fois").arg(speakerName, QString::number(nbAudioFiles - size - 1)), "julie");
-				}
 
-				if(!file.isNull())
-				{
-					QByteArray message = "MU "+file+"\nPL 3\nMW\n";
-					b->SendPacket(MessagePacket(message));
-					return true;
+					if(!file.isNull())
+					{
+						QByteArray message = "MU "+file+"\nPL 3\nMW\n";
+						b->SendPacket(MessagePacket(message));
+						return true;
+					}
 				}
 				return false;
 			}
