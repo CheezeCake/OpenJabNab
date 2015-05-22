@@ -17,22 +17,21 @@ bool PluginJoke::OnClick(Bunny* b, PluginInterface::ClickType)
 {
 	if(b->IsIdle() && Context::getAvailability())
 	{
-		// TODO Check the directory
-		QString jokeDirPath = "/resources/blagues";
+		QString jokeDirPath = "../resources/blagues";
 		QDir jokeDir(jokeDirPath);
-		if(jokeDir)
+		if(jokeDir.exists())
 		{
-			QStringList list = jokeDir->entryList();
-			if(list.count())
+			QStringList list = jokeDir.entryList();
+			if(list.count() > 0)
 			{
-				int rand = qrand % list.count();
+				int rand = qrand() % list.count();
 				QFile file(list.at(rand));
 				if (file.open(QIODevice::ReadOnly | QIODevice::Text))
 				{
-					QByteArray text("");
+					QByteArray text;
 					while (!file.atEnd())
 					{
-						QByteArray text += file.readLine();
+						text += file.readLine();
 					}
 					QString textMessage(text);
 					QString voice = b->GetPluginSetting(GetName(), "voice", "tts").toString();
@@ -40,7 +39,7 @@ bool PluginJoke::OnClick(Bunny* b, PluginInterface::ClickType)
 
 					if(!voiceFile.isNull())
 					{
-						QByteArray message = "MU "+file+"\nPL 3\nMW\n";
+						QByteArray message = "MU " + voiceFile + "\nPL 3\nMW\n";
 						b->SendPacket(MessagePacket(message));
 						return true;
 					}

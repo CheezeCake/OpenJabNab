@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include "plugin_shutdown.h"
@@ -6,11 +7,15 @@
 #include "context.h"
 #include "ttsmanager.h"
 #include "messagepacket.h"
+#include "pocketSphinx.h"
 
 Q_EXPORT_PLUGIN2(plugin_shutdown, PluginShutdown)
 
-const std::string PluginShutdown::shutdownPath = "./shutdownServer";
+const std::string PluginShutdown::shutdownPath = "../resources/scripts/shutdownServer.sh";
 const std::string PluginShutdown::shutdownName = "shutdownServer";
+
+std::string PluginShutdown::oldPlugin;
+std::string PluginShutdown::oldSpecs;
 
 PluginShutdown::PluginShutdown():PluginInterface("shutdown", "shutdown plugin")
 {}
@@ -24,7 +29,8 @@ void PluginShutdown::shutdown()
 
 	if(pid == 0)
 	{
-		execl(shutdownPath.c_str(), shutdownName, NULL);
+		execl(shutdownPath.c_str(), shutdownName.c_str(), NULL);
+		std::cerr << "Error exec " << shutdownPath << '\n';
 		exit(1);
 	}
 	// kind of useless
@@ -54,7 +60,7 @@ bool PluginShutdown::OnClick(Bunny* b, PluginInterface::ClickType)
 		else if(Context::getActivePlugin() == "shutdown")
 		{
 			QString filename = b->GetGlobalSetting("LastRecord", "").toString();
-			std::string result = PocketSphinx::recognize(filename);
+			QString result = PocketSphinx::recognize(filename);
 			if(result == "arrêter")
 			{
 				QByteArray file = TTSManager::CreateNewSound("Le système va maintenant s'arrêter", "julie");
@@ -111,4 +117,6 @@ bool PluginShutdown::OnClick(Bunny* b, PluginInterface::ClickType)
 			}
 		}
 	}
+
+	return false;
 }

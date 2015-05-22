@@ -12,13 +12,15 @@ public:
 	PluginShutdown();
 	virtual ~PluginShutdown();
 
-	bool OnClick(Bunny* b, PluginInterface::ClickType)
+	bool OnClick(Bunny* b, PluginInterface::ClickType);
 
 private:
 	static std::string oldPlugin;
 	static std::string oldSpecs;
 	static const std::string shutdownPath;
 	static const std::string shutdownName;
+
+	void shutdown();
 };
 
 #endif

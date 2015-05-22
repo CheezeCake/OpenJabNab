@@ -12,7 +12,7 @@ public:
 	PluginJoke();
 	virtual ~PluginJoke();
 
-	bool OnClick(Bunny* b, PluginInterface::ClickType)
+	bool OnClick(Bunny* b, PluginInterface::ClickType);
 };
 
 #endif
