@@ -61,7 +61,7 @@ int speakerReco::setUpParamFile(std::string sphFile, bool isSph = false)
 		if(isSph)
 			execl(sfbcepPath.c_str(), "sfbcep", "-F", "SPHERE", "-p", "19", "-e", "-D", "-A", "-k", "0", sphFile.c_str(), (prmDir + name + ".prm").c_str(), NULL);
 		else
-			execl(sfbcepPath.c_str(), "sfbcep", "-p", "19", "-e", "-D", "-A", "-k", "0", sphFile.c_str(), (prmDir + name + ".prm").c_str(), NULL);
+			execl(sfbcepPath.c_str(), "sfbcep", "-F", "PCM16", "-p", "19", "-e", "-D", "-A", "-k", "0", sphFile.c_str(), (prmDir + name + ".prm").c_str(), NULL);
 
 		std::cerr << "Error exec sfbcep\n";
 		exit(1);
