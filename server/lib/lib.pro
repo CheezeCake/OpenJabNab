@@ -50,7 +50,8 @@ HEADERS +=	httphandler.h \
 			iq.h \
 			pocketSphinx.h \
 			speakerReco.h \
-			context.h
+			context.h \
+			networkChecker.h
 
 SOURCES +=	httphandler.cpp \
 			xmpphandler.cpp \
@@ -76,4 +77,5 @@ SOURCES +=	httphandler.cpp \
 			iq.cpp \
 			pocketSphinx.cpp \
 			speakerReco.cpp \
-			context.cpp
+			context.cpp \
+			networkChecker.cpp

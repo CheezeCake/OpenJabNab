@@ -23,6 +23,7 @@ protected:
 	static QStringList voiceList;
 	static QDir ttsFolder;
 	static QString ttsHTTPUrl;
+	static const QString offlineTTS;
 private:
 	TTSManager();
         void LoadTTSs();

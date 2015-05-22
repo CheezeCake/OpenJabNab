@@ -11,6 +11,7 @@
 #include "log.h"
 #include "settings.h"
 #include "ttsmanager.h"
+#include "networkChecker.h"
 #include <cstdlib>
 
 TTSManager::TTSManager()
@@ -135,8 +136,16 @@ QByteArray TTSManager::CreateNewSound(QString text, QString voice, QString name,
 	return tts->CreateNewSound(text, voice, forceOverwrite);
 }
 
+const QString TTSManager::offlineTTS("espeak");
+
 QByteArray TTSManager::CreateNewSound(QString text, QString voice, bool forceOverwrite)
 {
-	TTSInterface * tts = Instance().GetTTSByName(GlobalSettings::Get("Config/TTS", "acapela").toString());
+	const QString configTTS(GlobalSettings::Get("Config/TTS", "acapela").toString());
+	QString ttsToUse(offlineTTS);
+
+	if (NetworkChecker::networkAvailable())
+		ttsToUse = configTTS;
+
+	TTSInterface * tts = Instance().GetTTSByName(ttsToUse);
 	return tts->CreateNewSound(text, voice, forceOverwrite);
 }
