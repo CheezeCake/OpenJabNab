@@ -7,7 +7,6 @@ class NetworkChecker
 {
 	public:
 		static bool networkAvailable();
-		static const QString Url;
 };
 
 #endif

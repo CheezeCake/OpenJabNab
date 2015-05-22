@@ -1,14 +1,18 @@
-#include <QNetworkRequest>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
+#include <QNetworkInterface>
 #include "networkChecker.h"
-
-const QString NetworkChecker::Url("http://google.com");
+#include "log.h"
 
 bool NetworkChecker::networkAvailable()
 {
-	QNetworkAccessManager accessManager;
-	QNetworkReply* reply = accessManager.get(QNetworkRequest(Url));
+	QList<QNetworkInterface> ifaces = QNetworkInterface::allInterfaces();
 
-	return (reply && reply->error() == QNetworkReply::NoError);
+	for (int i = 0; i < ifaces.count(); i++) {
+		QNetworkInterface iface = ifaces.at(i);
+
+		if (iface.humanReadableName() == "eth0" && 
+				iface.flags().testFlag(QNetworkInterface::IsUp))
+			return (iface.addressEntries().count() > 0);
+	}
+
+	return false;
 }
