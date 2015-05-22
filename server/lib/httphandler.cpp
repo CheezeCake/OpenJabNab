@@ -12,6 +12,8 @@
 #include "settings.h"
 #include "pocketSphinx.h"
 #include "context.h"
+#include "ttsmanager.h"
+#include "messagepacket.h"
 
 HttpHandler::HttpHandler(QTcpSocket * s, bool api, bool violetapi):pluginManager(PluginManager::Instance())
 {
@@ -88,37 +90,63 @@ void HttpHandler::HandleBunnyHTTPRequest()
 			LogInfo(record);
 			Context::update();
 
-			if (Context::getAvailability()) {
+			if (Context::getAvailability())
+			{
 				LogInfo("available");
 
 				QString recognized = PocketSphinx::recognize(record);
 				LogInfo("Recognized : " + recognized);
 
-
-				QMap<QString, QString> plugins;
-				plugins.insert("heure", "clock");
-				plugins.insert("reconnaissance", "speakerrecognition");
-				plugins.insert("enregistrement", "speakerregistration");
-				plugins.insert("agenda", "agenda");
-
-				QMap<QString, QString>::const_iterator it;
-				for (it = plugins.begin(); it != plugins.end(); ++it)
+				if (recognized.isEmpty())
 				{
-					if (recognized.startsWith(it.key()))
+					QByteArray file = TTSManager::CreateNewSound("je n'ai pas compris", "julie");
+					if (!file.isNull())
 					{
-						PluginInterface* p = PluginManager::Instance().GetPluginByName(*it);
-						LogInfo("starting plugin : " + *it);
+						QByteArray message = "MU "+file+"\nPL 3\nMW\n";
+						bunny->SendPacket(MessagePacket(message));
+					}
+				}
+				else
+				{
+					QMap<QString, QString> plugins;
+					plugins.insert("heure", "clock");
+					plugins.insert("reconnaissance", "speakerrecognition");
+					plugins.insert("enregistrement", "speakerregistration");
+					plugins.insert("agenda", "agenda");
+					plugins.insert("blague", "joke");
 
-						if (p)
-							p->OnClick(bunny, PluginInterface::SingleClick);
-						else
-							LogError("PluginManager returned null for plugin : " + *it);
+					bool plugin = false;
+					QMap<QString, QString>::const_iterator it;
+					for (it = plugins.begin(); it != plugins.end(); ++it)
+					{
+						if (recognized.startsWith(it.key()))
+						{
+							plugin = true;
+							PluginInterface* p = PluginManager::Instance().GetPluginByName(*it);
+							LogInfo("starting plugin : " + *it);
 
-						break;
+							if (p)
+								p->OnClick(bunny, PluginInterface::SingleClick);
+							else
+								LogError("PluginManager returned null for plugin : " + *it);
+
+							break;
+						}
+					}
+
+					if (!plugin)
+					{
+						QByteArray file = TTSManager::CreateNewSound("Il n'y a pas de plugin s'appelant, " + recognized, "julie");
+						if (!file.isNull())
+						{
+							QByteArray message = "MU "+file+"\nPL 3\nMW\n";
+							bunny->SendPacket(MessagePacket(message));
+						}
 					}
 				}
 			}
-			else {
+			else
+			{
 				QString activePlugin(Context::getActivePlugin().c_str());
 				PluginInterface* p = PluginManager::Instance().GetPluginByName(activePlugin);
 				LogInfo("starting plugin (waiting) : " + activePlugin);
