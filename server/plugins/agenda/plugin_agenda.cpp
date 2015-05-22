@@ -90,7 +90,7 @@ bool PluginAgenda::OnClick(Bunny* b, PluginInterface::ClickType)
 		int code;
 		sqlite3_stmt *stmt;
 
-		QRegExp add("ajouter (.+) le ([0-9]+ .+)( a (.+) heure (.+)?)?");
+		QRegExp add("ajouter (.+) le ([0-9]+ [a-z]+)( a [0-9]+ heure( [0-9]+)?)?");
 		QRegExp list(".+ [a-z]+");
 		QRegExp remove("supprimer ([0-9]+)");
 
