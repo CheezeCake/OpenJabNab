@@ -132,7 +132,15 @@ bool TTSManager::ReloadTTS(QString const& name)
 // Creatte TTS Song in /broadcast/tts/<name>/<voice>/[md5].mp3
 QByteArray TTSManager::CreateNewSound(QString text, QString voice, QString name, bool forceOverwrite)
 {
-	TTSInterface * tts = Instance().GetTTSByName(name);
+	const QString configTTS(name);
+	QString ttsToUse(offlineTTS);
+
+	if (NetworkChecker::networkAvailable())
+		ttsToUse = configTTS;
+
+	LogInfo(QString("configtts = %1, ttstouse = %2").arg(configTTS, ttsToUse));
+
+	TTSInterface * tts = Instance().GetTTSByName(ttsToUse);
 	return tts->CreateNewSound(text, voice, forceOverwrite);
 }
 
@@ -145,6 +153,8 @@ QByteArray TTSManager::CreateNewSound(QString text, QString voice, bool forceOve
 
 	if (NetworkChecker::networkAvailable())
 		ttsToUse = configTTS;
+
+	LogInfo(QString("configtts = %1, ttstouse = %2").arg(configTTS, ttsToUse));
 
 	TTSInterface * tts = Instance().GetTTSByName(ttsToUse);
 	return tts->CreateNewSound(text, voice, forceOverwrite);
