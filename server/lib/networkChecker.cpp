@@ -10,5 +10,5 @@ bool NetworkChecker::networkAvailable()
 	QNetworkAccessManager accessManager;
 	QNetworkReply* reply = accessManager.get(QNetworkRequest(Url));
 
-	return (reply && reply->error() != QNetworkReply::NoError);
+	return (reply && reply->error() == QNetworkReply::NoError);
 }
