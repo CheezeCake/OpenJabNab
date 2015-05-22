@@ -83,6 +83,7 @@ bool PluginSpeakerRegistration::OnClick(Bunny* b, PluginInterface::ClickType)
 						files.clear();
 						return true;
 					}
+					return false;
 				}
 
 				QString recordRoot = GlobalSettings::GetString("Config/RealHttpRoot", "") + "plugins/record/";
@@ -90,7 +91,7 @@ bool PluginSpeakerRegistration::OnClick(Bunny* b, PluginInterface::ClickType)
 				std::string filepath = recordRoot.toStdString() + filename.toStdString();
 				files.push_back(filepath);
 
-				if (size + 1 < nbAudioFiles)
+				if (size + 1 <= nbAudioFiles)
 				{
 					QString voice = b->GetPluginSetting(GetName(), "voice", "tts").toString();
 					QByteArray file = TTSManager::CreateNewSound(QString("Merci %1, j'ai encore besoin que tu me parles %2 fois").arg(speakerName, QString::number(nbAudioFiles - size - 1)), "julie");
