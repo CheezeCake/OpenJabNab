@@ -6,7 +6,7 @@ public <final> = <basicCmd> | <prenom> | <agendaCmd>;
 
 <basicCmd> = <basicPlugin> | <basicKeyword>;
 <basicPlugin> = heure | reconnaissance | enregistrement | blague;
-<basicKeywords> = arrêter | oublier | annuler;
+<basicKeyword> = arrêter | oublier | annuler;
 
 <agendaCmd> = [ agenda ] (<agendaList> | <agendaAdd> | <agendaDelete>);
 
