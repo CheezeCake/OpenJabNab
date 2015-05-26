@@ -1,6 +1,5 @@
 #include <QNetworkInterface>
 #include "networkChecker.h"
-#include "log.h"
 
 bool NetworkChecker::networkAvailable()
 {
