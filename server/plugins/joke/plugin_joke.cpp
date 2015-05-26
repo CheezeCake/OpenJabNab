@@ -4,6 +4,7 @@
 #include "context.h"
 #include "ttsmanager.h"
 #include "messagepacket.h"
+#include "log.h"
 
 Q_EXPORT_PLUGIN2(plugin_joke, PluginJoke)
 
@@ -17,7 +18,7 @@ bool PluginJoke::OnClick(Bunny* b, PluginInterface::ClickType)
 {
 	if(b->IsIdle() && Context::getAvailability())
 	{
-		QString jokeDirPath = "../resources/blagues";
+		const QString jokeDirPath = "../resources/blagues/";
 		QDir jokeDir(jokeDirPath);
 		if(jokeDir.exists())
 		{
@@ -25,14 +26,16 @@ bool PluginJoke::OnClick(Bunny* b, PluginInterface::ClickType)
 			if(list.count() > 0)
 			{
 				int rand = qrand() % list.count();
-				QFile file(list.at(rand));
+				QFile file(jokeDirPath + list.at(rand));
 				if (file.open(QIODevice::ReadOnly | QIODevice::Text))
 				{
+					LogInfo(QString("open %1").arg(file.fileName()));
 					QByteArray text;
 					while (!file.atEnd())
 					{
 						text += file.readLine();
 					}
+					LogInfo(text.constData());
 					QString textMessage(text);
 					QString voice = b->GetPluginSetting(GetName(), "voice", "tts").toString();
 					QByteArray voiceFile = TTSManager::CreateNewSound(textMessage, "julie");
