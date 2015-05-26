@@ -11,7 +11,7 @@
 
 Q_EXPORT_PLUGIN2(plugin_shutdown, PluginShutdown)
 
-const std::string PluginShutdown::shutdownPath = "../resources/scripts/shutdownServer.sh";
+const std::string PluginShutdown::shutdownPath = "/bin/poweroff";
 const std::string PluginShutdown::shutdownName = "shutdownServer";
 
 std::string PluginShutdown::oldPlugin;
