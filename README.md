@@ -4,6 +4,15 @@ An open PHP/C++-based proxy framework for the Nabaztag/Tag™ electronic pet wit
 
 Nabaztag is a trade mark of Violet. OpenJabNab is not owned by or affiliated with Violet.
 
+University project
+------------------
+This fork of OpenJabNab was made for a project in 2015. The goal was to use a Raspberry Pi (2) as a server for a Nabaztag/Tag™.
+Features added:
+* Offline TTS with [eSpeak](http://espeak.sourceforge.net/)
+* Speech recognition with [Pocketshpinx](http://cmusphinx.sourceforge.net/)
+* Speeker recognition with [LIA_RAL](http://mistral.univ-avignon.fr/)
+* Interactive plugins (context saving)
+
 
 I) Terms of use
 ---------------
